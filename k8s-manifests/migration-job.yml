@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: go-app-migrations
+  namespace: go-app-ns
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: go-app-migrations
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrations
+          image: go-app-migrations:local
+          imagePullPolicy: Never
+          command:
+            - migrate
+          args:
+            - "-path=/migrations"
+            - "-database=postgres://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)"
+            - "up"
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
+            - name: DB_HOST
+              value: postgres-svc
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_SSLMODE
+              value: "disable"
