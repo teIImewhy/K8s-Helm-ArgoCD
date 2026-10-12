@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: go-app-migrations
-  namespace: go-app-ns
+  namespace: default
 spec:
   backoffLimit: 3
   template:
@@ -13,8 +13,8 @@ spec:
       restartPolicy: Never
       containers:
         - name: migrations
-          image: go-app-migrations:local
-          imagePullPolicy: Never
+          image: ghcr.io/teiimewhy/go-app-migrations:local
+          imagePullPolicy: IfNotPresent
           command:
             - migrate
           args:

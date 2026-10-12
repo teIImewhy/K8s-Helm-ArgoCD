@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: html-page-depl
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: html-page
+  template:
+    metadata:
+      labels:
+        app: html-page
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable-alpine3.24
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+      volumes:
+        - name: html-content
+          configMap:
+            name: html-page
+        - name: nginx-config
+          configMap:
+            name: html-nginx-config
+
