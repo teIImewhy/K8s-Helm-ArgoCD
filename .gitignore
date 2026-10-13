@@ -1,0 +1,7 @@
+# Kubernetes secrets with real credentials
+k8s-manifests/postgres-secret.yml
+
+# Local environment variables
+.env
+.env.*
+!.env.example
