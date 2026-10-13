@@ -1,0 +1,19 @@
+{{- if .Values.htmlPage.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.htmlPage.service.name }}
+  labels:
+    app.kubernetes.io/name: html-page
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: {{ .Values.htmlPage.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.htmlPage.service.port }}
+      targetPort: {{ .Values.htmlPage.containerPort }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: html-page
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

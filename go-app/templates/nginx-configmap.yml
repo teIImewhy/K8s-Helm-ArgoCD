@@ -1,0 +1,25 @@
+{{- if .Values.htmlPage.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.htmlPage.configMap.nginxName }}
+  labels:
+    app.kubernetes.io/name: html-page
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name _;
+
+        location = /about {
+            alias /usr/share/nginx/html/index.html;
+            default_type text/html;
+        }
+
+        location = /about/ {
+            alias /usr/share/nginx/html/index.html;
+            default_type text/html;
+        }
+    }
+{{- end }}

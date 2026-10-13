@@ -1,0 +1,44 @@
+{{- if .Values.htmlPage.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: html-page
+  labels:
+    app.kubernetes.io/name: html-page
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.htmlPage.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: html-page
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: html-page
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: nginx
+          image: "{{ .Values.htmlPage.image.repository }}:{{ .Values.htmlPage.image.tag }}"
+          imagePullPolicy: {{ .Values.htmlPage.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.htmlPage.containerPort }}
+          volumeMounts:
+            - name: html-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+      volumes:
+        - name: html-content
+          configMap:
+            name: {{ .Values.htmlPage.configMap.contentName }}
+        - name: nginx-config
+          configMap:
+            name: {{ .Values.htmlPage.configMap.nginxName }}
+{{- end }}
